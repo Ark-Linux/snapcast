@@ -52,7 +52,9 @@ AirplayStream::AirplayStream(PcmListener* pcmListener, boost::asio::io_context& 
     logStderr_ = true;
 
     string devicename = uri_.getQuery("devicename", "Snapcast");
-    params_wo_port_ = "\"--name=" + devicename + "\" --output=stdout --use-stderr --get-coverart";
+//    params_wo_port_ = "\"--name=" + devicename + "\" --output=stdout --use-stderr --get-coverart";
+//[TYM] delete the stderr
+    params_wo_port_ = "\"--name=" + devicename + "\" --output=stdout --get-coverart";
 
     port_ = cpt::stoul(uri_.getQuery("port", "5000"));
     setParamsAndPipePathFromPort();
@@ -197,7 +199,9 @@ void AirplayStream::setMetaData(const string& key, const string& newValue)
 
 void AirplayStream::setParamsAndPipePathFromPort()
 {
-    pipePath_ = "/tmp/shairmeta." + cpt::to_string(getpid()) + "." + cpt::to_string(port_);
+//   pipePath_ = "/tmp/shairmeta." + cpt::to_string(getpid()) + "." + cpt::to_string(port_);
+//  [TYM] create only one pipe
+    pipePath_ = "/tmp/shairmeta.123.5000";
     params_ = params_wo_port_ + " \"--metadata-pipename=" + pipePath_ + "\" --port=" + cpt::to_string(port_);
 }
 
@@ -215,7 +219,9 @@ void AirplayStream::pipeReadLine()
     {
         try
         {
-            int fd = open(pipePath_.c_str(), O_RDONLY | O_NONBLOCK);
+//          int fd = open(pipePath_.c_str(), O_RDONLY | O_NONBLOCK);
+// [TYM] open the pipe
+            int fd = open("/tmp/shairmeta.123.5000", O_RDONLY | O_NONBLOCK);
             pipe_fd_ = std::make_unique<boost::asio::posix::stream_descriptor>(ioc_, fd);
             LOG(INFO, LOG_TAG) << "Metadata pipe opened: " << pipePath_ << "\n";
         }

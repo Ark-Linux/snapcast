@@ -47,7 +47,9 @@ void Config::init(const std::string& root_directory, const std::string& user, co
     if (!root_directory.empty())
         dir = root_directory;
     else if (getenv("HOME") == nullptr)
-        dir = "/var/lib/snapserver/";
+//        dir = "/var/lib/snapserver/";
+//[TYM]  exchange the server.json localplace
+        dir = "/data/snapserver/";
     else
         dir = string(getenv("HOME")) + "/.config/snapserver/";
 
